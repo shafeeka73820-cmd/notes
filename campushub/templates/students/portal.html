@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CampusHub Portal{% endblock %}
+
+{% block content %}
+<style>
+.stat-card { transition: transform .2s; cursor: default; }
+.stat-card:hover { transform: translateY(-3px); }
+.student-table img { width: 40px; height: 50px; object-fit: cover; border-radius: 6px; }
+.table-hover tbody tr { transition: background .15s; }
+.form-section { border-left: 4px solid var(--bs-primary); }
+fieldset { border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+legend { width: auto; padding: 0 12px; font-weight: 600; color: var(--bs-primary); font-size: 1.1rem; }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">CampusHub Portal</h1>
+    <div>
+        <a href="{% url 'admin:index' %}" class="btn btn-outline-primary btn-sm" target="_blank">Admin Panel</a>
+        <a href="{% url 'students:add' %}" class="btn btn-primary btn-sm">+ Add Student</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card border-primary">
+            <div class="card-body text-center">
+                <h3 class="text-primary mb-1">{{ agg.total }}</h3>
+                <small class="text-muted">Total Students</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card border-success">
+            <div class="card-body text-center">
+                <h3 class="text-success mb-1">{{ agg.avg_marks|floatformat:1 }}</h3>
+                <small class="text-muted">Average Marks (Aggregate)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card border-warning">
+            <div class="card-body text-center">
+                <h3 class="text-warning mb-1">{{ agg.top }}</h3>
+                <small class="text-muted">Highest Marks (Max)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card border-danger">
+            <div class="card-body text-center">
+                <h3 class="text-danger mb-1">{{ dept_stats|length }}</h3>
+                <small class="text-muted">Departments (Annotate)</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <fieldset>
+            <legend>Students</legend>
+            <div class="table-responsive">
+                <table class="table table-hover student-table align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Roll</th>
+                            <th>Branch</th>
+                            <th>Department (FK)</th>
+                            <th>Marks</th>
+                            <th>Grade</th>
+                            <th>Courses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        <tr>
+                            <td>
+                                {% if s.photo %}
+                                <img src="{{ s.photo.url }}" alt="{{ s.name }}">
+                                {% else %}
+                                <img src="{% static 'images/default-avatar.svg' %}" alt="No Photo">
+                                {% endif %}
+                            </td>
+                            <td><a href="{% url 'students:detail' s.roll %}" class="fw-semibold text-decoration-none">{{ s.name }}</a></td>
+                            <td>{{ s.roll }}</td>
+                            <td>{{ s.branch }}</td>
+                            <td>{{ s.department.name|default:'-' }}</td>
+                            <td>{{ s.marks }}</td>
+                            <td>
+                                {% with g=s.grade %}
+                                <span class="badge {% if g == 'A' %}bg-success{% elif g == 'B' %}bg-primary{% elif g == 'C' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ g }}
+                                </span>
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% for c in s.courses.all %}
+                                <span class="badge bg-secondary me-1">{{ c.code }}</span>
+                                {% empty %} - {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Departments (Annotate + Count + Avg)</legend>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Department</th>
+                            <th>Code</th>
+                            <th>Students</th>
+                            <th>Avg Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in dept_stats %}
+                        <tr>
+                            <td class="fw-semibold">{{ d.name }}</td>
+                            <td>{{ d.code }}</td>
+                            <td>{{ d.strength }}</td>
+                            <td>{{ d.avg_marks|floatformat:1|default:'-' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-muted">No departments.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Courses (M2M Count)</legend>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Title</th>
+                            <th>Credits</th>
+                            <th>Enrolled Students</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in course_counts %}
+                        <tr>
+                            <td class="fw-semibold">{{ c.code }}</td>
+                            <td>{{ c.title }}</td>
+                            <td>{{ c.credits }}</td>
+                            <td>{{ c.student_count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-muted">No courses.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="col-lg-4">
+        <fieldset class="form-section">
+            <legend>Add Student (ModelForm)</legend>
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="add_student" value="1">
+
+                {% if student_form.non_field_errors %}
+                <div class="alert alert-danger py-2 small">
+                    {% for e in student_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+                {% endif %}
+
+                {% for field in student_form %}
+                <div class="mb-2">
+                    <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block small">
+                        {% for e in field.errors %}<div>{{ e }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100">Save Student</button>
+            </form>
+        </fieldset>
+
+        <fieldset class="form-section mt-3">
+            <legend>Feedback (Form + Validation)</legend>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="feedback" value="1">
+
+                {% if feedback_form.non_field_errors %}
+                <div class="alert alert-danger py-2 small">
+                    {% for e in feedback_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}
+                </div>
+                {% endif %}
+
+                {% for field in feedback_form %}
+                <div class="mb-2">
+                    <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block small">
+                        {% for e in field.errors %}<div>{{ e }}</div>{% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-success w-100">Submit Feedback</button>
+            </form>
+        </fieldset>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'students:stats' %}" class="btn btn-outline-info btn-sm">Stats Page (Aggregate)</a>
+                    <a href="{% url 'students:search' %}" class="btn btn-outline-secondary btn-sm">Search (Field Lookup)</a>
+                    <a href="{% url 'admin:students_student_changelist' %}" class="btn btn-outline-dark btn-sm" target="_blank">Admin: Students</a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-primary btn-sm" target="_blank">Admin Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

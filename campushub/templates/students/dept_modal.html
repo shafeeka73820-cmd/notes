@@ -1,0 +1,45 @@
+<div class="modal fade" id="deptModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white border-0">
+                <h5 class="modal-title fw-bold" id="deptModalTitle"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <img id="deptModalImg" src="" alt="" class="w-100 rounded-3" style="height: 220px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-7">
+                        <span class="badge bg-primary bg-opacity-10 text-primary fs-6 mb-2" id="deptModalCode"></span>
+                        <p class="text-muted small" id="deptModalDesc"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <a href="#" class="btn btn-outline-primary btn-sm" id="deptModalLink">View Full Details <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var deptModal = document.getElementById('deptModal');
+    if (deptModal) {
+        deptModal.addEventListener('show.bs.modal', function(event) {
+            var trigger = event.relatedTarget;
+            var code = trigger.getAttribute('data-code');
+            var name = trigger.getAttribute('data-name');
+            var desc = trigger.getAttribute('data-desc');
+            var img = trigger.getAttribute('data-img');
+            document.getElementById('deptModalTitle').textContent = name;
+            document.getElementById('deptModalCode').textContent = code;
+            document.getElementById('deptModalDesc').textContent = desc;
+            document.getElementById('deptModalImg').src = img;
+            document.getElementById('deptModalImg').alt = name;
+            document.getElementById('deptModalLink').href = '/students/departments/' + code + '/';
+        });
+    }
+});
+</script>

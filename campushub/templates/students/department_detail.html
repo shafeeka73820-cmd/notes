@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ dept.code }} - {{ dept.name }} | MTIET{% endblock %}
+
+{% block content %}
+<style>
+.dept-hero {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+.dept-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+.dept-hero .badge-dept {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+.dept-hero h1 {
+    font-weight: 800;
+    font-size: 2rem;
+    position: relative;
+    z-index: 1;
+}
+.dept-hero p {
+    opacity: 0.85;
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+}
+.stat-card-mini {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: transform 0.3s;
+}
+.stat-card-mini:hover {
+    transform: translateY(-3px);
+}
+.stat-card-mini .num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #4f46e5;
+    line-height: 1;
+}
+.stat-card-mini .lbl {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+[data-theme="dark"] .stat-card-mini {
+    background: #1e293b;
+}
+[data-theme="dark"] .stat-card-mini .lbl {
+    color: #94a3b8;
+}
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'students:index' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'students:departments' %}">Departments</a></li>
+        <li class="breadcrumb-item active">{{ dept.code }}</li>
+    </ol>
+</nav>
+
+<div class="dept-hero">
+    <div class="badge-dept">{{ dept.code }}</div>
+    <h1><i class="bi bi-building me-2"></i>{{ dept.name }}</h1>
+    <p>{{ dept.description }}</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+            <div class="num">{{ dept.strength }}</div>
+            <div class="lbl">Students</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+            <div class="num">{{ dept.avg_marks|floatformat:1|default:'-' }}</div>
+            <div class="lbl">Avg Marks</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+            <div class="num">{{ students|length }}</div>
+            <div class="lbl">Top Students</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card-mini">
+            <div class="num">{{ dept.code }}</div>
+            <div class="lbl">Dept Code</div>
+        </div>
+    </div>
+</div>
+
+{% if students %}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white fw-bold">Students in {{ dept.name }}</div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Roll</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>
+                            {% if s.photo %}
+                            <img src="{{ s.photo.url }}" alt="{{ s.name }}" class="student-avatar">
+                            {% else %}
+                            <div class="student-avatar bg-secondary text-white d-flex align-items-center justify-content-center rounded-circle" style="width:40px;height:40px;font-size:0.8rem;font-weight:700;">
+                                {{ s.name|first|upper }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="fw-semibold">{{ s.name }}</td>
+                        <td>{{ s.roll }}</td>
+                        <td>{{ s.marks }}</td>
+                        <td>
+                            <span class="badge {% if s.grade == 'A' %}bg-success{% elif s.grade == 'B' %}bg-primary{% elif s.grade == 'C' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                {{ s.grade }}
+                            </span>
+                        </td>
+                        <td>{{ s.attendance }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-people display-1 text-muted"></i>
+    <p class="mt-3 text-muted">No students enrolled in this department yet.</p>
+</div>
+{% endif %}
+
+<div class="mt-3">
+    <a href="{% url 'students:departments' %}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-1"></i>All Departments</a>
+</div>
+{% endblock %}

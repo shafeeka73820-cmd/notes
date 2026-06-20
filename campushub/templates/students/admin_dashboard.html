@@ -1,0 +1,525 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard | CampusHub{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-danger: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-info: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  --gradient-dark: linear-gradient(135deg, #434343 0%, #000000 100%);
+}
+.dashboard-header {
+  background: var(--gradient-primary);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  box-shadow: 0 10px 40px rgba(102,126,234,0.3);
+}
+.dashboard-header h1 { color: #fff; font-weight: 700; font-size: 1.8rem; text-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+.dashboard-header .btn { border-radius: 50px; padding: 6px 20px; font-weight: 500; }
+.stat-card {
+  border: none !important;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  cursor: default;
+  position: relative;
+}
+.stat-card:hover { transform: translateY(-6px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); }
+.stat-card .card-body { padding: 24px 16px; position: relative; z-index: 1; }
+.stat-card .stat-icon {
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 2.5rem; opacity: 0.15; font-weight: 900;
+}
+.stat-card h3 { font-weight: 800; font-size: 2rem; margin-bottom: 4px; }
+.stat-card small { font-weight: 500; opacity: 0.8; }
+.stat-gradient-1 { background: var(--gradient-primary); color: #fff; }
+.stat-gradient-2 { background: var(--gradient-success); color: #fff; }
+.stat-gradient-3 { background: var(--gradient-warning); color: #fff; }
+.stat-gradient-4 { background: var(--gradient-danger); color: #fff; }
+.section-card {
+  background: #fff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.section-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+.section-header {
+  padding: 16px 20px;
+  font-weight: 700;
+  font-size: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-header .icon-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.85rem; font-weight: 700;
+}
+.section-body { padding: 16px 20px; }
+.table th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.admin-table img { width: 42px; height: 52px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.badge-grade { padding: 4px 12px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; }
+.action-btn { border-radius: 50px; padding: 2px 14px; font-size: 0.75rem; font-weight: 600; transition: all 0.2s; }
+.action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.form-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border: 1px solid #e8ecf4;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 18px;
+  transition: all 0.3s;
+}
+.form-card:hover { border-color: #c8d0e0; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.form-card legend {
+  font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: #667eea; margin-bottom: 14px;
+  width: 100%; padding-bottom: 8px; border-bottom: 2px solid #eef2ff;
+}
+.upload-zone {
+  border: 2px dashed #d0d5e0;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  background: #fafbff;
+  transition: all 0.3s;
+}
+.upload-zone:hover { border-color: #667eea; background: #f0f2ff; }
+.marks-bar {
+  height: 6px; border-radius: 3px; margin-top: 4px;
+  background: linear-gradient(90deg, #38ef7d, #11998e);
+  transition: width 0.5s;
+}
+.quick-link-btn { border-radius: 50px !important; font-size: 0.78rem !important; font-weight: 600 !important; padding: 6px 16px !important; }
+</style>
+
+<div class="dashboard-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="mb-1">Admin Dashboard</h1>
+    <p class="mb-0 text-white-50" style="font-size:0.9rem;">Manage students, departments, courses & documents</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'students:portal' %}" class="btn btn-light">Portal</a>
+    <a href="{% url 'admin:index' %}" class="btn btn-outline-light" target="_blank">Django Admin</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card stat-gradient-1 shadow-sm">
+      <div class="card-body">
+        <h3>{{ agg.total }}</h3>
+        <small>Total Students</small>
+        <div class="stat-icon">&#x1F393;</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card stat-gradient-2 shadow-sm">
+      <div class="card-body">
+        <h3>{{ agg.avg_marks|floatformat:1 }}</h3>
+        <small>Average Marks</small>
+        <div class="stat-icon">&#x1F4CA;</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card stat-gradient-3 shadow-sm">
+      <div class="card-body">
+        <h3>{{ agg.top }}</h3>
+        <small>Highest Marks</small>
+        <div class="stat-icon">&#x1F3C6;</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card stat-gradient-4 shadow-sm">
+      <div class="card-body">
+        <h3>{{ agg.bottom }}</h3>
+        <small>Lowest Marks</small>
+        <div class="stat-icon">&#x1F4AA;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-9">
+    <div class="section-card">
+      <div class="section-header">
+        <span class="icon-circle" style="background:var(--gradient-primary);">S</span>
+        Students
+        <span class="badge bg-primary rounded-pill ms-auto">{{ agg.total }}</span>
+      </div>
+      <div class="section-body">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="bulk_action" value="1">
+          <div class="d-flex gap-2 mb-3 align-items-center">
+            <select name="action" class="form-select form-select-sm w-auto" required>
+              <option value="">-- Bulk Actions --</option>
+              <option value="bonus">+5 Bonus Marks (F expression)</option>
+              <option value="deactivate">Deactivate Non-Toppers (Q object)</option>
+              <option value="reset">Reset Marks to 0</option>
+            </select>
+            <button type="submit" class="btn btn-warning action-btn" onclick="return confirm('Apply bulk action?')">Apply</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover admin-table align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Roll</th>
+                  <th>Branch</th>
+                  <th>Dept</th>
+                  <th>Marks</th>
+                  <th>Grade</th>
+                  <th>Status</th>
+                  <th>Courses</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in students %}
+                <tr class="{% if not s.is_active %}table-secondary" style="opacity:0.7{% endif %}">
+                  <td><input type="checkbox" name="selected_students" value="{{ s.id }}"></td>
+                  <td>
+                    {% if s.photo %}
+                    <img src="{{ s.photo.url }}" alt="{{ s.name }}">
+                    {% else %}
+                    <img src="{% static 'images/default-avatar.svg' %}" alt="No Photo" style="background:#f1f5f9;padding:6px;">
+                    {% endif %}
+                  </td>
+                  <td><a href="{% url 'students:detail' s.roll %}" class="fw-semibold text-decoration-none">{{ s.name }}</a></td>
+                  <td><span class="badge bg-light text-dark">{{ s.roll }}</span></td>
+                  <td><span class="badge bg-info bg-opacity-10 text-info-emphasis border border-info border-opacity-25">{{ s.branch }}</span></td>
+                  <td>{{ s.department.name|default:'<span class="text-muted">-</span>' }}</td>
+                  <td>
+                    {{ s.marks }}
+                    <div class="marks-bar" style="width:{{ s.marks }}%"></div>
+                  </td>
+                  <td>
+                    {% with g=s.grade %}
+                    <span class="badge badge-grade {% if g == 'A' %}bg-success{% elif g == 'B' %}bg-primary{% elif g == 'C' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ g }}</span>
+                    {% endwith %}
+                  </td>
+                  <td>
+                    {% if s.is_active %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="border-radius:50px;">Active</span>
+                    {% else %}
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25" style="border-radius:50px;">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>{% for c in s.courses.all %}<span class="badge bg-dark me-1" style="border-radius:50px;">{{ c.code }}</span>{% empty %}<span class="text-muted">-</span>{% endfor %}</td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <a href="{% url 'students:detail' s.roll %}" class="btn btn-outline-info action-btn">View</a>
+                      <a href="{% url 'students:edit' s.roll %}" class="btn btn-outline-warning action-btn">Edit</a>
+                      <a href="{% url 'students:delete' s.roll %}" class="btn btn-outline-danger action-btn">Del</a>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="11" class="text-center py-4 text-muted">No students found.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <span class="icon-circle" style="background:var(--gradient-success);">D</span>
+        Departments
+        <span class="badge bg-success rounded-pill ms-auto">{{ departments|length }}</span>
+      </div>
+      <div class="section-body">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Students</th>
+                <th>Avg Marks</th>
+                <th>Top Performer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in departments %}
+              <tr>
+                <td class="fw-semibold">{{ d.name }}</td>
+                <td><span class="badge bg-secondary" style="border-radius:50px;">{{ d.code }}</span></td>
+                <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ d.strength }}</span></td>
+                <td>
+                  {% if d.avg_marks %}
+                  <span class="badge {% if d.avg_marks >= 75 %}bg-success{% elif d.avg_marks >= 40 %}bg-warning text-dark{% else %}bg-danger{% endif %}" style="border-radius:50px;">{{ d.avg_marks|floatformat:1 }}</span>
+                  {% else %}-{% endif %}
+                </td>
+                <td><strong class="text-primary-emphasis">{{ d.top_student_name }}</strong>{% if d.top_student_marks %} <span class="text-muted">({{ d.top_student_marks }})</span>{% endif %}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" class="text-center py-3 text-muted">No departments.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <span class="icon-circle" style="background:var(--gradient-warning);">C</span>
+        Courses
+        <span class="badge bg-warning text-dark rounded-pill ms-auto">{{ courses|length }}</span>
+      </div>
+      <div class="section-body">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Credits</th>
+                <th>Students</th>
+                <th>Avg Marks</th>
+                <th>Highest</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in courses %}
+              <tr>
+                <td><span class="badge bg-dark" style="border-radius:50px;">{{ c.code }}</span></td>
+                <td class="fw-semibold">{{ c.title }}</td>
+                <td>{% for i in ""|ljust:c.credits %}<span class="text-warning">&#9733;</span>{% endfor %} {{ c.credits }}</td>
+                <td><span class="badge bg-info bg-opacity-10 text-info-emphasis">{{ c.student_count }}</span></td>
+                <td>{{ c.avg_marks|floatformat:1|default:'-' }}</td>
+                <td><strong>{{ c.max_marks|default:'-' }}</strong></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center py-3 text-muted">No courses.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <span class="icon-circle" style="background:var(--gradient-info);">F</span>
+        Documents
+        <span class="badge bg-info rounded-pill ms-auto">{{ documents|length }}</span>
+      </div>
+      <div class="section-body">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th>File</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Student</th>
+                <th>Uploaded</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for doc in documents %}
+              <tr>
+                <td class="fw-semibold">{{ doc.title }}</td>
+                <td><a href="{{ doc.file.url }}" target="_blank" class="text-decoration-none"><span class="badge bg-light text-dark border">&#x1F4CE; {{ doc.filename }}</span></a></td>
+                <td><span class="badge {% if doc.category == 'assignment' %}bg-danger{% elif doc.category == 'notes' %}bg-success{% elif doc.category == 'report' %}bg-warning text-dark{% elif doc.category == 'certificate' %}bg-info{% else %}bg-secondary{% endif %}" style="border-radius:50px;">{{ doc.get_category_display }}</span></td>
+                <td><span class="text-muted small">{{ doc.size_display }}</span></td>
+                <td>{{ doc.student.name|default:'<span class="text-muted">-</span>' }}</td>
+                <td><span class="small text-muted">{{ doc.uploaded_at|date:"d M Y" }}</span></td>
+                <td>
+                  <form method="post" action="{% url 'students:delete_document' doc.pk %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger action-btn" onclick="return confirm('Delete {{ doc.title }}?')">Del</button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="7" class="text-center py-3 text-muted">No documents uploaded.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3">
+    <div class="form-card">
+      <legend>Add Student</legend>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="add_student" value="1">
+        {% if student_form.non_field_errors %}
+        <div class="alert alert-danger py-2 small">{% for e in student_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in student_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 btn-sm" style="border-radius:50px;font-weight:600;">+ Add Student</button>
+      </form>
+    </div>
+
+    <div class="form-card">
+      <legend>Add Department</legend>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="add_department" value="1">
+        {% if dept_form.non_field_errors %}
+        <div class="alert alert-danger py-2 small">{% for e in dept_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in dept_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+          {% if field.help_text %}<div class="form-text small">{{ field.help_text }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 btn-sm" style="border-radius:50px;font-weight:600;background:var(--gradient-success);border:none;">+ Add Dept</button>
+      </form>
+    </div>
+
+    <div class="form-card">
+      <legend>Add Course</legend>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="add_course" value="1">
+        {% if course_form.non_field_errors %}
+        <div class="alert alert-danger py-2 small">{% for e in course_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in course_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success w-100 btn-sm" style="border-radius:50px;font-weight:600;background:var(--gradient-warning);border:none;">+ Add Course</button>
+      </form>
+    </div>
+
+    <div class="form-card">
+      <legend>Upload Document</legend>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="upload_document" value="1">
+        {% if document_form.non_field_errors %}
+        <div class="alert alert-danger py-2 small">{% for e in document_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in document_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {% if field.name == 'file' %}
+          <div class="upload-zone">{{ field }}</div>
+          {% else %}
+          {{ field }}
+          {% endif %}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-info w-100 btn-sm" style="border-radius:50px;font-weight:600;background:var(--gradient-info);border:none;color:#333;">Upload</button>
+        <small class="text-muted d-block text-center mt-1">Max 10 MB (PDF, DOC, JPG, PNG, ZIP)</small>
+      </form>
+    </div>
+
+    <div class="form-card">
+      <legend>My Profile</legend>
+      <div class="text-center mb-3">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--gradient-primary);margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:700;">{{ user.username|first|upper }}</div>
+      </div>
+      <table class="table table-sm small mb-3">
+        <tr><td class="text-muted">Username</td><td class="fw-semibold">{{ user.username }}</td></tr>
+        <tr><td class="text-muted">Email</td><td>{{ user.email }}</td></tr>
+        <tr><td class="text-muted">Role</td><td><span class="badge bg-primary bg-opacity-10 text-primary" style="border-radius:50px;">{{ profile.get_role_display }}</span></td></tr>
+        <tr><td class="text-muted">Phone</td><td>{{ profile.phone|default:'<span class="text-muted">-</span>' }}</td></tr>
+      </table>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="update_profile" value="1">
+        {% for field in profile_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 btn-sm" style="border-radius:50px;font-weight:600;">Update</button>
+      </form>
+    </div>
+
+    <div class="form-card">
+      <legend>Change Password</legend>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="change_password" value="1">
+        {% if password_form.non_field_errors %}
+        <div class="alert alert-danger py-2 small">{% for e in password_form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+        {% endif %}
+        {% for field in password_form %}
+        <div class="mb-2">
+          <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="invalid-feedback d-block small">{% for e in field.errors %}<div>{{ e }}</div>{% endfor %}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-warning w-100 btn-sm" style="border-radius:50px;font-weight:600;">Change Password</button>
+      </form>
+    </div>
+
+    <div class="card" style="border:none;border-radius:14px;background:var(--gradient-dark);box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+      <div class="card-body text-center py-3">
+        <h6 class="text-white mb-3" style="font-weight:700;">Quick Links</h6>
+        <div class="d-grid gap-2">
+          <a href="{% url 'students:add' %}" class="btn btn-light quick-link-btn">+ Add Student (CBV)</a>
+          <a href="{% url 'students:stats' %}" class="btn btn-outline-light quick-link-btn">Statistics</a>
+          <a href="{% url 'students:search' %}" class="btn btn-outline-light quick-link-btn">Search</a>
+          <a href="{% url 'students:feedback' %}" class="btn btn-outline-light quick-link-btn">Feedback</a>
+          <a href="{% url 'password_reset' %}" class="btn btn-outline-light quick-link-btn">Forgot Password</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleAll(source) {
+    document.querySelectorAll('input[name="selected_students"]').forEach(cb => cb.checked = source.checked);
+}
+</script>
+{% endblock %}

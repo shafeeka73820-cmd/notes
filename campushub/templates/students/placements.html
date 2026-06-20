@@ -1,0 +1,170 @@
+{% extends 'base.html' %}{% load static %}{% block title %}Placements | MTIET{% endblock %}
+{% block content %}
+<div class="py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+<div class="container">
+<div class="text-center text-white py-4">
+<h1 class="fw-bold mb-2" style="font-size: 2.5rem;">Placements at MTIET</h1>
+<p class="text-white-50 mb-0" style="font-size: 1.1rem;">Building careers — from classroom to boardroom</p>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="row g-4">
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+<div class="fs-1 fw-bold">₹7 LPA</div>
+<small>Highest Package</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+<div class="fs-1 fw-bold">895+</div>
+<small>Offers (2024)</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4" style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+<div class="fs-1 fw-bold">90%</div>
+<small>Placement Rate</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+<div class="fs-1 fw-bold">₹4.5 LPA</div>
+<small>Average Package</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container">
+<div class="row align-items-center g-5">
+<div class="col-lg-6">
+<h2 class="fw-bold mb-3">Training & Placement Cell</h2>
+<p class="text-muted">The Training & Placement Cell at MTIET works tirelessly to bridge the gap between academia and industry. From resume building to mock interviews, every student receives personalized attention to ensure career readiness.</p>
+<div class="d-flex flex-column gap-3 mt-4">
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(79,70,229,0.1);"><i class="bi bi-file-text text-primary"></i></div>
+<div><h6 class="fw-bold mb-1">Resume Building Workshops</h6><small class="text-muted">Professional resume and portfolio guidance</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(16,185,129,0.1);"><i class="bi bi-chat-dots text-success"></i></div>
+<div><h6 class="fw-bold mb-1">Mock Interviews</h6><small class="text-muted">Simulated interview sessions with industry experts</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(245,158,11,0.1);"><i class="bi bi-laptop text-warning"></i></div>
+<div><h6 class="fw-bold mb-1">Aptitude Training</h6><small class="text-muted">Quantitative, logical & verbal ability programs</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(236,72,153,0.1);"><i class="bi bi-building" style="color: #ec4899;"></i></div>
+<div><h6 class="fw-bold mb-1">Industry Collaborations</h6><small class="text-muted">MoU with IIT Madras, Virtual Labs IIT Bombay</small></div>
+</div>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="rounded-4 overflow-hidden"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop" class="w-100" style="height: 340px; object-fit: cover;" alt="Placement Training" loading="lazy"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Our Placement Partners</h2>
+<p class="text-muted">Leading companies that recruit from MTIET</p>
+</div>
+<div class="row g-4 justify-content-center">
+{% for company in companies %}
+<div class="col-md-3 col-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column align-items-center justify-content-center" style="border: 1px solid #e2e8f0; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+<div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; background: rgba(79,70,229,0.08);"><i class="bi bi-building fs-3 text-primary"></i></div>
+<h6 class="fw-bold mb-0">{{ company }}</h6>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Placement Process</h2>
+<p class="text-muted">Our structured approach to student placements</p>
+</div>
+<div class="row g-4">
+<div class="col-md-3">
+<div class="text-center p-4">
+<div class="d-inline-flex align-items-center justify-content-center rounded-4 mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 800; font-size: 1.5rem;">1</div>
+<h6 class="fw-bold mb-1">Registration</h6>
+<small class="text-muted">Students register with placement cell and submit profiles</small>
+</div>
+</div>
+<div class="col-md-3">
+<div class="text-center p-4">
+<div class="d-inline-flex align-items-center justify-content-center rounded-4 mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #f093fb, #f5576c); color: white; font-weight: 800; font-size: 1.5rem;">2</div>
+<h6 class="fw-bold mb-1">Training</h6>
+<small class="text-muted">Aptitude, technical & soft skills training sessions</small>
+</div>
+</div>
+<div class="col-md-3">
+<div class="text-center p-4">
+<div class="d-inline-flex align-items-center justify-content-center rounded-4 mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; font-weight: 800; font-size: 1.5rem;">3</div>
+<h6 class="fw-bold mb-1">Company Drive</h6>
+<small class="text-muted">Companies visit campus for recruitment drives</small>
+</div>
+</div>
+<div class="col-md-3">
+<div class="text-center p-4">
+<div class="d-inline-flex align-items-center justify-content-center rounded-4 mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; font-weight: 800; font-size: 1.5rem;">4</div>
+<h6 class="fw-bold mb-1">Placement</h6>
+<small class="text-muted">Selected students receive offer letters & join as trainees</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Alumni Success Stories</h2>
+<p class="text-muted">Our graduates are making their mark globally</p>
+</div>
+<div class="row g-4">
+<div class="col-md-6 col-lg-3">
+<div class="p-4 rounded-4 text-center h-100" style="border: 1px solid #e2e8f0;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1.8rem;"><i class="bi bi-person-fill"></i></div>
+<h6 class="fw-bold mb-1">S. Bhavana</h6>
+<small class="text-muted d-block">Associate Engineer</small>
+<small class="text-primary fw-semibold">Altimetrik · ₹7 LPA</small>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="p-4 rounded-4 text-center h-100" style="border: 1px solid #e2e8f0;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; background: linear-gradient(135deg, #f093fb, #f5576c); color: white; font-size: 1.8rem;"><i class="bi bi-person-fill"></i></div>
+<h6 class="fw-bold mb-1">V. S. Chaithanya</h6>
+<small class="text-muted d-block">Associate Engineer</small>
+<small class="text-primary fw-semibold">Altimetrik · ₹7 LPA</small>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="p-4 rounded-4 text-center h-100" style="border: 1px solid #e2e8f0;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; font-size: 1.8rem;"><i class="bi bi-person-fill"></i></div>
+<h6 class="fw-bold mb-1">G. Brundha</h6>
+<small class="text-muted d-block">Software Engineer</small>
+<small class="text-primary fw-semibold">Capgemini · ₹6 LPA</small>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="p-4 rounded-4 text-center h-100" style="border: 1px solid #e2e8f0;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; font-size: 1.8rem;"><i class="bi bi-person-fill"></i></div>
+<h6 class="fw-bold mb-1">Ajay</h6>
+<small class="text-muted d-block">Programmer Analyst</small>
+<small class="text-primary fw-semibold">Cognizant · ₹4.67 LPA</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

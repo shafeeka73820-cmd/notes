@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Statistics | CampusHub{% endblock %}
+{% block content %}
+<h1 class="mb-4">CampusHub Statistics</h1>
+
+<div class="row g-4 mb-5">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white text-center p-3">
+      <h3>{{ agg.total }}</h3>
+      <p class="mb-0">Total Students</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white text-center p-3">
+      <h3>{{ agg.avg_marks|floatformat:1 }}</h3>
+      <p class="mb-0">Average Marks</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-dark text-center p-3">
+      <h3>{{ agg.top }}</h3>
+      <p class="mb-0">Highest Marks</p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-danger text-white text-center p-3">
+      <h3>{{ agg.bottom }}</h3>
+      <p class="mb-0">Lowest Marks</p>
+    </div>
+  </div>
+</div>
+
+<h2 class="mb-3">Top 3 Students</h2>
+<table class="table table-striped table-hover mb-5">
+  <thead class="table-dark">
+    <tr><th>#</th><th>Name</th><th>Roll</th><th>Branch</th><th>Marks</th><th>Grade</th></tr>
+  </thead>
+  <tbody>
+    {% for s in toppers %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'students:detail' roll=s.roll %}">{{ s.name }}</a></td>
+      <td>{{ s.roll }}</td>
+      <td>{{ s.get_branch_display }}</td>
+      <td>{{ s.marks }}</td>
+      <td><span class="badge bg-{% if s.marks >= 75 %}success{% elif s.marks >= 40 %}primary{% else %}danger{% endif %}">{{ s.grade }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="row">
+  <div class="col-md-6">
+    <h2 class="mb-3">Per-Department Stats</h2>
+    <table class="table table-bordered">
+      <thead class="table-dark"><tr><th>Department</th><th>Students</th><th>Avg Marks</th></tr></thead>
+      <tbody>
+        {% for d in dept_stats %}
+        <tr>
+          <td>{{ d.name }}</td>
+          <td>{{ d.strength }}</td>
+          <td>{{ d.avg_marks|floatformat:1 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <h2 class="mb-3">Courses & Enrollment</h2>
+    <table class="table table-bordered">
+      <thead class="table-dark"><tr><th>Course</th><th>Credits</th><th>Students</th></tr></thead>
+      <tbody>
+        {% for c in course_counts %}
+        <tr>
+          <td>{{ c.code }} – {{ c.title }}</td>
+          <td>{{ c.credits }}</td>
+          <td>{{ c.student_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

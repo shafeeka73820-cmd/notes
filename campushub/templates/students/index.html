@@ -1,0 +1,869 @@
+{% extends 'base.html' %}{% load static %}{% block title %}MTIET | Students{% endblock %}
+{% block main_class %}{% endblock %}
+{% block content %}
+{% load static %}
+<div class="hero-slider position-relative" id="heroSlider">
+<div id="readingProgress"></div>
+<div class="hero-slides">
+<div class="hero-slide active" style="background-image: url('https://mtieat.org/uploads/facility_gallery/20_07_2022_555761778.jpg');"></div>
+<div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=1600&h=900&fit=crop');"></div>
+<div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&h=900&fit=crop');"></div>
+</div>
+<div class="slide-overlay"></div>
+<div class="hero-particles"><div class="particle p1"></div><div class="particle p2"></div><div class="particle p3"></div><div class="particle p4"></div><div class="particle p5"></div><div class="particle p6"></div></div>
+<div class="container position-relative" style="z-index: 2;">
+<div class="row align-items-center min-vh-75 py-5">
+<div class="col-lg-7 text-white">
+<div class="d-flex gap-2 flex-wrap mb-3">
+<span class="hero-badge badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12); backdrop-filter: blur(4px);"><i class="bi bi-check-circle-fill me-1 text-success"></i>NAAC A+</span>
+<span class="hero-badge badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12); backdrop-filter: blur(4px);"><i class="bi bi-mortarboard-fill me-1"></i>EAPCET: MTIE</span>
+<span class="hero-badge badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12); backdrop-filter: blur(4px);"><i class="bi bi-building me-1"></i>UGC-Autonomous</span>
+</div>
+<h1 class="fw-bold mb-2" style="font-size: 2.8rem; line-height: 1.1;">Mother Theresa Institute of<br><span class="gradient-text">Engineering & Technology</span></h1>
+<div class="d-flex align-items-center gap-2 mb-3" style="min-height: 2.8rem;">
+<span class="fs-5 fw-light opacity-90">Offering</span>
+<span class="fw-bold fs-5" style="color: #fbbf24;">
+<span class="flip-courses d-inline-block">
+<span class="flip-item">B.Tech - CSE</span>
+<span class="flip-item">B.Tech - CSE (AI & ML)</span>
+<span class="flip-item">B.Tech - AI & Data Science</span>
+<span class="flip-item">B.Tech - CSE (Data Science)</span>
+<span class="flip-item">B.Tech - CSE (AI)</span>
+<span class="flip-item">B.Tech - ECE</span>
+<span class="flip-item">B.Tech - EEE</span>
+<span class="flip-item">B.Tech - Mechanical</span>
+<span class="flip-item">B.Tech - Civil</span>
+</span>
+</span>
+</div>
+<p class="mb-3 opacity-85" style="font-size: 1.05rem;">Est. 2010 · Affiliated to JNTUA, Anantapur · Approved by AICTE · ISO 9001:2015</p>
+<p class="mb-4" style="min-height: 1.6rem;"><span id="heroTyping" class="fw-light opacity-75"></span></p>
+<div class="d-flex gap-3 flex-wrap mb-4">
+<a href="https://api.whatsapp.com/send?phone=919866888648&text=Hi%20MTIET" class="btn btn-light btn-lg fw-bold rounded-pill px-4 shadow-lg"><i class="bi bi-whatsapp me-2 text-success"></i>Admission Enquiry</a>
+<a href="#" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="bi bi-download me-2"></i>Brochure</a>
+</div>
+<div class="d-flex gap-4 flex-wrap">
+<div class="text-center"><div class="fs-2 fw-bold">{{ count }}+</div><small class="opacity-75">Students</small></div>
+<div class="text-center"><div class="fs-2 fw-bold">{{ dept_count }}</div><small class="opacity-75">Departments</small></div>
+<div class="text-center"><div class="fs-2 fw-bold">{{ toppers|length|default:"0" }}+</div><small class="opacity-75">Top Rankers</small></div>
+<div class="text-center"><div class="fs-2 fw-bold">7000+</div><small class="opacity-75">Alumni</small></div>
+</div>
+</div>
+<div class="col-lg-5 mt-4 mt-lg-0">
+<div class="rounded-4 p-4 border border-white border-opacity-20" style="backdrop-filter: blur(12px); background: rgba(255,255,255,0.08);">
+{% if user.is_authenticated %}
+<div class="d-flex gap-2 mb-3"><input type="text" id="studentSearch" class="form-control form-control-lg bg-white bg-opacity-25 text-white border-0" placeholder="🔍 Search students..." style="backdrop-filter: blur(4px);"><a href="{% url 'students:add' %}" class="btn btn-light btn-lg fw-bold shadow-sm px-3 flex-shrink-0">+ Add</a></div>
+{% endif %}
+<div class="text-white small d-flex justify-content-between">
+<span><i class="bi bi-clock me-1"></i><span id="liveClock"></span></span>
+<span><span class="greeting-tag p-0 bg-transparent border-0" id="greetingTag"></span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="hero-slider-nav">
+<button class="hero-dot active" onclick="goToSlide(0)"></button>
+<button class="hero-dot" onclick="goToSlide(1)"></button>
+<button class="hero-dot" onclick="goToSlide(2)"></button>
+</div>
+<button class="hero-arrow hero-arrow-left" onclick="changeSlide(-1)">&#10094;</button>
+<button class="hero-arrow hero-arrow-right" onclick="changeSlide(1)">&#10095;</button>
+</div>
+<script>
+var slideIndex = 0;
+var slides = document.querySelectorAll('.hero-slide');
+var dots = document.querySelectorAll('.hero-dot');
+var slideInterval;
+function showSlide(idx) {
+  slides.forEach(function(s,i){ s.classList.toggle('active',i===idx); });
+  dots.forEach(function(d,i){ d.classList.toggle('active',i===idx); });
+  slideIndex = idx;
+}
+function goToSlide(idx) { showSlide(idx); resetInterval(); }
+function changeSlide(n) { showSlide((slideIndex + n + slides.length) % slides.length); resetInterval(); }
+function resetInterval() { clearInterval(slideInterval); slideInterval = setInterval(function(){ changeSlide(1); }, 5000); }
+slideInterval = setInterval(function(){ changeSlide(1); }, 5000);
+function initSectionSliders(){
+  document.querySelectorAll('.section-slider').forEach(function(sec){
+    var ssec = sec.querySelectorAll('.section-slide');
+    if(ssec.length<2)return;
+    var idx=0;
+    ssec[0].classList.add('active');
+    setInterval(function(){
+      ssec.forEach(function(s,i){ s.classList.toggle('active',i===idx); });
+      idx=(idx+1)%ssec.length;
+      ssec.forEach(function(s,i){ s.classList.toggle('active',i===idx); });
+    }, 5000);
+  });
+}
+initSectionSliders();
+</script>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container" data-aos="fade-up">
+<div class="row g-4">
+<div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="0">
+<div class="text-center py-4 px-2 rounded-4 stat-float" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+<div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 56px; height: 56px; background: linear-gradient(135deg, #667eea, #764ba2);"><i class="bi bi-people-fill text-white fs-4"></i></div>
+<div class="fs-2 fw-bold" style="color: #1e293b;"><span class="counter" data-target="{{ count }}">0</span>+</div>
+<div class="text-muted small text-uppercase" style="letter-spacing: 0.5px;">Students</div>
+</div>
+</div>
+<div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+<div class="text-center py-4 px-2 rounded-4 stat-float" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+<div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 56px; height: 56px; background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="bi bi-building text-white fs-4"></i></div>
+<div class="fs-2 fw-bold" style="color: #1e293b;">{{ dept_count }}</div>
+<div class="text-muted small text-uppercase" style="letter-spacing: 0.5px;">Departments</div>
+</div>
+</div>
+<div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+<div class="text-center py-4 px-2 rounded-4 stat-float" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+<div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 56px; height: 56px; background: linear-gradient(135deg, #4facfe, #00f2fe);"><i class="bi bi-trophy text-white fs-4"></i></div>
+<div class="fs-2 fw-bold" style="color: #1e293b;">7000+</div>
+<div class="text-muted small text-uppercase" style="letter-spacing: 0.5px;">Alumni</div>
+</div>
+</div>
+<div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
+<div class="text-center py-4 px-2 rounded-4 stat-float" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+<div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2" style="width: 56px; height: 56px; background: linear-gradient(135deg, #43e97b, #38f9d7);"><i class="bi bi-briefcase text-white fs-4"></i></div>
+<div class="fs-2 fw-bold" style="color: #1e293b;">₹7<span class="fs-6">LPA</span></div>
+<div class="text-muted small text-uppercase" style="letter-spacing: 0.5px;">Highest Package</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+<div class="container">
+<div class="row align-items-center g-5">
+<div class="col-lg-6">
+<span class="badge bg-primary bg-opacity-75 mb-2">AICTE Initiative</span>
+<h2 class="fw-bold text-white mb-3" style="font-size: 2rem;" data-aos="fade-right">AI & Innovation Hub</h2>
+<p class="text-white-50 mb-3">MTIET's AICTE IDEA Lab is a state-of-the-art innovation ecosystem where students transform ideas into prototypes. Equipped with 3D printers, IoT kits, robotics, and AI/ML workstations.</p>
+<div class="d-flex flex-wrap gap-2 mb-4">
+<span class="badge border border-info border-opacity-25 px-3 py-2" style="background: rgba(14,165,233,0.1); color: #22d3ee;">3D Printing</span>
+<span class="badge border border-info border-opacity-25 px-3 py-2" style="background: rgba(14,165,233,0.1); color: #22d3ee;">Robotics</span>
+<span class="badge border border-info border-opacity-25 px-3 py-2" style="background: rgba(14,165,233,0.1); color: #22d3ee;">IoT Lab</span>
+<span class="badge border border-info border-opacity-25 px-3 py-2" style="background: rgba(14,165,233,0.1); color: #22d3ee;">AI/ML Workstations</span>
+<span class="badge border border-info border-opacity-25 px-3 py-2" style="background: rgba(14,165,233,0.1); color: #22d3ee;">Drone Lab</span>
+</div>
+<div class="d-flex gap-4">
+<div><div class="fw-bold fs-4" style="color: #fbbf24;">MoU</div><small class="text-white-50">IIT Madras</small></div>
+<div class="vr opacity-25"></div>
+<div><div class="fw-bold fs-4" style="color: #fbbf24;">Award</div><small class="text-white-50">Best Active Institute</small></div>
+<div class="vr opacity-25"></div>
+<div><div class="fw-bold fs-4" style="color: #fbbf24;">13</div><small class="text-white-50">NIT Calicut Select</small></div>
+</div>
+<a href="{% url 'students:gallery' %}" class="btn btn-outline-light rounded-pill mt-4 px-4">Explore IDEA Lab <i class="bi bi-arrow-right ms-1"></i></a>
+</div>
+<div class="col-lg-6">
+<div class="row g-2">
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 160px;"><img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=500&h=350&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="IDEA Lab" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 160px;"><img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=500&h=350&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Innovation" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 160px;"><img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&h=350&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Robotics" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 160px;"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=350&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="AI Lab" loading="lazy"></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container" data-aos="fade-up">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">World-Class Infrastructure</h2>
+<p class="text-muted">A 20+ acre campus designed for academic excellence and holistic growth</p>
+</div>
+<div class="row g-4">
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 h-100 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #667eea, #764ba2);"><i class="bi bi-easel text-white fs-3"></i></div>
+<h6 class="fw-bold mb-1">Smart Classrooms</h6>
+<small class="text-muted">20+ digital classrooms with projectors & smart boards</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 h-100 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #f093fb, #f5576c);"><i class="bi bi-flask text-white fs-3"></i></div>
+<h6 class="fw-bold mb-1">Modern Labs</h6>
+<small class="text-muted">22+ well-equipped labs for practical learning</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 h-100 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #4facfe, #00f2fe);"><i class="bi bi-book text-white fs-3"></i></div>
+<h6 class="fw-bold mb-1">Central Library</h6>
+<small class="text-muted">9000+ books, e-resources & digital library</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 h-100 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; background: linear-gradient(135deg, #43e97b, #38f9d7);"><i class="bi bi-wifi text-white fs-3"></i></div>
+<h6 class="fw-bold mb-1">Wi-Fi Campus</h6>
+<small class="text-muted">High-speed internet across the campus</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container" data-aos="fade-up">
+<div class="row align-items-center g-5">
+<div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
+<div class="rounded-4 overflow-hidden"><img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&h=400&fit=crop" class="w-100" style="height: 320px; object-fit: cover;" alt="Hostel Life" loading="lazy"></div>
+</div>
+<div class="col-lg-6">
+<h2 class="fw-bold mb-3">Hostel Life – Your Home Away from Home</h2>
+<p class="text-muted mb-4">Experience a nurturing environment that fosters personal growth, lifelong friendships, and memories you'll cherish forever.</p>
+<div class="d-flex flex-column gap-3">
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(79,70,229,0.1);"><i class="bi bi-flower2 text-primary"></i></div>
+<div><h6 class="fw-bold mb-1">Yoga & Meditation</h6><small class="text-muted">Begin each day with tranquility and mindfulness</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(16,185,129,0.1);"><i class="bi bi-trophy text-success"></i></div>
+<div><h6 class="fw-bold mb-1">Sports & Fitness</h6><small class="text-muted">Indoor & outdoor sports facilities</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(245,158,11,0.1);"><i class="bi bi-book text-warning"></i></div>
+<div><h6 class="fw-bold mb-1">Extended Library Access</h6><small class="text-muted">24/7 library and lab access for hostel students</small></div>
+</div>
+<div class="d-flex align-items-start gap-3">
+<div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: rgba(236,72,153,0.1);"><i class="bi bi-house-door" style="color: #ec4899;"></i></div>
+<div><h6 class="fw-bold mb-1">Separate Hostels</h6><small class="text-muted">Secure accommodation for boys & girls</small></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+<div class="container">
+<div class="row align-items-center g-5">
+<div class="col-lg-6 order-lg-2">
+<div class="rounded-4 overflow-hidden"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=400&fit=crop" class="w-100" style="height: 320px; object-fit: cover;" alt="Student Wellbeing" loading="lazy"></div>
+</div>
+<div class="col-lg-6 order-lg-1">
+<span class="badge bg-success bg-opacity-75 mb-2">Support System</span>
+<h2 class="fw-bold text-white mb-3" data-aos="fade-left">Student Wellbeing – We've Got Your Back</h2>
+<p class="text-white-50 mb-4">Navigating the tech landscape can be overwhelming, but you're not alone. Our dedicated wellness professionals support you emotionally and academically.</p>
+<div class="row g-3">
+<div class="col-sm-6">
+<div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06);">
+<div class="text-info fs-4 mb-1"><i class="bi bi-chat-dots"></i></div>
+<h6 class="text-white fw-bold small mb-0">24/7 Counseling</h6>
+<small class="text-white-50">Mental health helpline & mentor support</small>
+</div>
+</div>
+<div class="col-sm-6">
+<div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06);">
+<div class="text-warning fs-4 mb-1"><i class="bi bi-activity"></i></div>
+<h6 class="text-white fw-bold small mb-0">Stress Management</h6>
+<small class="text-white-50">Workshops & wellness programs</small>
+</div>
+</div>
+<div class="col-sm-6">
+<div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06);">
+<div class="text-success fs-4 mb-1"><i class="bi bi-flower2"></i></div>
+<h6 class="text-white fw-bold small mb-0">Mindfulness</h6>
+<small class="text-white-50">Daily meditation & yoga sessions</small>
+</div>
+</div>
+<div class="col-sm-6">
+<div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06);">
+<div class="fs-4 mb-1" style="color: #ec4899;"><i class="bi bi-mortarboard"></i></div>
+<h6 class="text-white fw-bold small mb-0">Mentor System</h6>
+<small class="text-white-50">One-on-one faculty mentorship</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">What Sets MTIET Apart</h2>
+<p class="text-muted">Excellence in engineering education, research & innovation</p>
+</div>
+<div class="row g-3">
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(79,70,229,0.1);"><i class="bi bi-award fs-3 text-primary"></i></div>
+<h6 class="fw-bold small mb-1">NAAC A+</h6><small class="text-muted">NBA Accredited Programs</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(16,185,129,0.1);"><i class="bi bi-mortarboard fs-3 text-success"></i></div>
+<h6 class="fw-bold small mb-1">UGC-Autonomous</h6><small class="text-muted">Flexible & Modern Curriculum</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(245,158,11,0.1);"><i class="bi bi-briefcase fs-3 text-warning"></i></div>
+<h6 class="fw-bold small mb-1">100% Placements</h6><small class="text-muted">Top recruiters: TCS, Cognizant & more</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(14,165,233,0.1);"><i class="bi bi-flask fs-3 text-info"></i></div>
+<h6 class="fw-bold small mb-1">AICTE IDEA Lab</h6><small class="text-muted">Innovation & Entrepreneurship</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(139,92,246,0.1);"><i class="bi bi-laptop fs-3" style="color: #8b5cf6;"></i></div>
+<h6 class="fw-bold small mb-1">MoU with IIT Madras</h6><small class="text-muted">Research & FDP Collaboration</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(236,72,153,0.1);"><i class="bi bi-wifi fs-3" style="color: #ec4899;"></i></div>
+<h6 class="fw-bold small mb-1">Digital Campus</h6><small class="text-muted">Wi-Fi, Smart Classrooms, e-Library</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(245,158,11,0.1);"><i class="bi bi-people fs-3" style="color: #f59e0b;"></i></div>
+<h6 class="fw-bold small mb-1">NSS & Clubs</h6><small class="text-muted">Tech, Cultural & Sports Activities</small>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="text-center p-4 rounded-4 hover-lift" style="background: #f8fafc;">
+<div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 56px; height: 56px; background: rgba(239,68,68,0.1);"><i class="bi bi-bus-front fs-3 text-danger"></i></div>
+<h6 class="fw-bold small mb-1">Transport</h6><small class="text-muted">50+ km coverage area</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+<div class="container">
+<div class="row align-items-center g-5">
+<div class="col-lg-6">
+<span class="badge bg-warning bg-opacity-75 mb-2 text-dark">Placements</span>
+<h2 class="fw-bold text-white mb-3">Corporate in Campus</h2>
+<p class="text-white-50 mb-4">MTIET bridges academia and industry through strategic collaborations, ensuring students gain real-world exposure and career-ready skills.</p>
+<div class="d-flex flex-wrap gap-2 mb-4">
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #93c5fd;"><i class="bi bi-mortarboard me-1"></i>MoU with IIT Madras</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #86efac;"><i class="bi bi-laptop me-1"></i>Virtual Labs IIT Bombay</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fde68a;"><i class="bi bi-stars me-1"></i>AICTE IDEA Lab</span>
+</div>
+<div class="row g-3 mt-3">
+<div class="col-4 text-center">
+<div class="fw-bold fs-3 text-warning">₹7 LPA</div><small class="text-white-50">Highest Package</small>
+</div>
+<div class="col-4 text-center">
+<div class="fw-bold fs-3 text-warning">895+</div><small class="text-white-50">Offers (2024)</small>
+</div>
+<div class="col-4 text-center">
+<div class="fw-bold fs-3 text-warning">90%</div><small class="text-white-50">Placement Rate</small>
+</div>
+</div>
+<div class="mt-4 d-flex flex-wrap gap-2">
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">TCS</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">Cognizant</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">Infosys</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">Capgemini</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">Altimetrik</span>
+<span class="badge px-3 py-2" style="background: rgba(255,255,255,0.08); color: #fff;">Mphasis</span>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="row g-2">
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 180px;"><img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=300&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Placements" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 180px;"><img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=300&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Corporate" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 180px;"><img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Industry" loading="lazy"></div></div>
+<div class="col-6"><div class="rounded-4 overflow-hidden" style="height: 180px;"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Students" loading="lazy"></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">High Demand Courses</h2>
+<p class="text-muted">Industry-aligned B.Tech programs designed for tomorrow's careers</p>
+</div>
+<div class="row g-4">
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(79,70,229,0.1);"><i class="bi bi-laptop fs-2 text-primary"></i></div>
+<h5 class="fw-bold mb-1">CSE</h5>
+<p class="small text-muted flex-grow-1 mb-2">Computer Science & Engineering — build software, web & mobile apps used by millions.</p>
+<span class="badge bg-primary bg-opacity-10 text-primary align-self-center">4 Years</span>
+</div>
+</div>
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(16,185,129,0.1);"><i class="bi bi-cpu fs-2 text-success"></i></div>
+<h5 class="fw-bold mb-1">CSE (AI & ML)</h5>
+<p class="small text-muted flex-grow-1 mb-2">Artificial Intelligence & Machine Learning — build intelligent systems that learn & adapt.</p>
+<span class="badge bg-success bg-opacity-10 text-success align-self-center">4 Years</span>
+</div>
+</div>
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(245,158,11,0.1);"><i class="bi bi-bar-chart-line fs-2 text-warning"></i></div>
+<h5 class="fw-bold mb-1">AI & Data Science</h5>
+<p class="small text-muted flex-grow-1 mb-2">Data Science — turn raw data into insights, predictions & business value.</p>
+<span class="badge bg-warning bg-opacity-10 text-warning align-self-center">4 Years</span>
+</div>
+</div>
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(236,72,153,0.1);"><i class="bi bi-motherboard fs-2" style="color: #ec4899;"></i></div>
+<h5 class="fw-bold mb-1">ECE</h5>
+<p class="small text-muted flex-grow-1 mb-2">Electronics & Communication — design circuits, embedded systems & communication networks.</p>
+<span class="badge align-self-center" style="background: rgba(236,72,153,0.1); color: #ec4899;">4 Years</span>
+</div>
+</div>
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(139,92,246,0.1);"><i class="bi bi-gear-wide-connected fs-2" style="color: #8b5cf6;"></i></div>
+<h5 class="fw-bold mb-1">EEE</h5>
+<p class="small text-muted flex-grow-1 mb-2">Electrical & Electronics — power systems, renewable energy & industrial automation.</p>
+<span class="badge align-self-center" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">4 Years</span>
+</div>
+</div>
+<div class="col-lg-4 col-md-6">
+<div class="p-4 rounded-4 text-center h-100 d-flex flex-column" class="hover-lift" style="border: 1px solid #e2e8f0;">
+<div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-3 mx-auto" style="width: 64px; height: 64px; background: rgba(239,68,68,0.1);"><i class="bi bi-building fs-2 text-danger"></i></div>
+<h5 class="fw-bold mb-1">MECH / CIVIL</h5>
+<p class="small text-muted flex-grow-1 mb-2">Mechanical & Civil Engineering — design, build & maintain infrastructure & machines.</p>
+<span class="badge bg-danger bg-opacity-10 text-danger align-self-center">4 Years</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Our Departments</h2>
+<p class="text-muted">Explore our diverse range of engineering departments</p>
+</div>
+<div class="row g-3">
+{% for d in departments %}
+<div class="col-6 col-md-4 col-lg-3">
+<div class="dept-img-card d-block text-decoration-none" role="button" data-bs-toggle="modal" data-bs-target="#deptModal" data-code="{{ d.code }}" data-name="{{ d.name }}" data-desc="{{ d.description }}" data-img="{% if d.image_url %}{{ d.image_url }}{% else %}https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=250&fit=crop{% endif %}">
+<div class="dept-bg" style="background-image: url('{% if d.image_url %}{{ d.image_url }}{% else %}https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=250&fit=crop{% endif %}'); background-size: cover; background-position: center;"></div>
+<div class="dept-overlay">
+<h6 class="fw-bold mb-0">{{ d.code }}</h6>
+<small>{{ d.name }}</small>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+{% include 'students/dept_modal.html' %}
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">What Our Students Say</h2>
+<p class="text-muted">Hear from our alumni and current students about their MTIET experience</p>
+</div>
+<div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-inner">
+<div class="carousel-item active">
+<div class="row justify-content-center">
+<div class="col-lg-8 text-center px-4">
+<i class="bi bi-quote display-3 text-primary opacity-25"></i>
+<p class="fs-5 fst-italic mb-3">"MTIET is the only engineering college where you find the homely environment, best faculty, great learning experience, well structured curriculum and what not. This college has produced amazing individuals over years."</p>
+<div class="d-flex align-items-center justify-content-center gap-2">
+<div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="bi bi-person-fill text-primary fs-5"></i></div>
+<div class="text-start"><strong>S. Bhavana</strong><small class="d-block text-muted">Associate Engineer, Altimetrik · ₹7 LPA</small></div>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center">
+<div class="col-lg-8 text-center px-4">
+<i class="bi bi-quote display-3 text-primary opacity-25"></i>
+<p class="fs-5 fst-italic mb-3">"College acts as a bridge between student life and professional life. The placement cell is excellent. Almost all students are placed before they complete their courses. Highly recommend MTIET!"</p>
+<div class="d-flex align-items-center justify-content-center gap-2">
+<div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="bi bi-person-fill text-success fs-5"></i></div>
+<div class="text-start"><strong>V. S. Chaithanya</strong><small class="d-block text-muted">Associate Engineer, Altimetrik · ₹7 LPA</small></div>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center">
+<div class="col-lg-8 text-center px-4">
+<i class="bi bi-quote display-3 text-primary opacity-25"></i>
+<p class="fs-5 fst-italic mb-3">"I got placed in SecureW2, Mind Tree, Mphasis and Capgemini for Software Engineer role with highest package 6 LPA. I really thank each and every faculty who guided us throughout our phase of engineering."</p>
+<div class="d-flex align-items-center justify-content-center gap-2">
+<div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="bi bi-person-fill text-warning fs-5"></i></div>
+<div class="text-start"><strong>G. Brundha</strong><small class="d-block text-muted">Software Engineer, Capgemini · ₹6 LPA</small></div>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center">
+<div class="col-lg-8 text-center px-4">
+<i class="bi bi-quote display-3 text-primary opacity-25"></i>
+<p class="fs-5 fst-italic mb-3">"The college atmosphere is very pleasant. The college conducts tech fest, cultural fest every year. Many events are conducted at regular intervals related to sports, cultural, technical etc."</p>
+<div class="d-flex align-items-center justify-content-center gap-2">
+<div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="bi bi-person-fill text-info fs-5"></i></div>
+<div class="text-start"><strong>Ajay</strong><small class="d-block text-muted">Programmer Analyst, Cognizant · ₹4.67 LPA</small></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev" style="width: 40px;"><span class="carousel-control-prev-icon bg-primary rounded-circle" style="padding: 12px;"></span></button>
+<button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next" style="width: 40px;"><span class="carousel-control-next-icon bg-primary rounded-circle" style="padding: 12px;"></span></button>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container" data-aos="fade-up">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Secretary's Message</h2>
+<p class="text-muted">A word from our esteemed Secretary</p>
+</div>
+<div class="row justify-content-center">
+<div class="col-lg-10">
+<div class="secretary-card d-flex flex-column flex-md-row align-items-center gap-4 p-4 p-md-5 rounded-4 shadow-sm" data-aos="zoom-in" data-aos-delay="100">
+<div class="secretary-img-wrapper flex-shrink-0" data-aos="flip-left" data-aos-delay="300">
+<img src="https://mtieat.org/assets/img/corres.png" alt="Secretary" class="secretary-img">
+</div>
+<div class="secretary-text" data-aos="fade-left" data-aos-delay="200">
+<i class="bi bi-quote display-4 text-primary opacity-25 d-block mb-2"></i>
+<p class="mb-3 fst-italic fs-5 lh-base secretary-quote">Greetings to all! I am highly pleased to write this note in the capacity of the Secretary of MTIEAT. Our institute has not been established just to make the students obtain degrees alone. Its motto is to help the students cultivate self-discipline, learning attitude and self confidence. We focus on innovative teaching and learning process with high moral values so that they can meet the demands of the global engineering sector. I believe in order to build a prosperous nation, we need to make holistic professional education accessible and affordable to the youth. I invite you to be part of our journey towards excellence.</p>
+<h6 class="fw-bold mb-0 secretary-name">Mr. M. Ravindra Babu</h6>
+<small class="text-muted">Secretary & Correspondent, MTIET</small>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #f8fafc;">
+<div class="container">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">Campus Gallery</h2>
+<p class="text-muted">A glimpse into life at MTIET</p>
+</div>
+<div class="row g-3">
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/facility_gallery/20_07_2022_555761778.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Classrooms" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/facility_gallery/25_06_2022_1807232858.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Library" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/facility_gallery/25_06_2022_678483024.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Hostel" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/facility_gallery/25_06_2022_546641496.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Lab" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/facility_gallery/25_06_2022_1800125526.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Transport" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/activity_gallery/25_06_2022_923076000.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Sports" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://mtieat.org/uploads/campus_news/18_04_2026_113653.jpg" class="w-100 h-100" style="object-fit: cover;" alt="Event" loading="lazy"></div></div>
+<div class="col-md-3 col-6"><div class="gallery-img-wrap" style="height: 180px;"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=300&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Wellbeing" loading="lazy"></div></div>
+</div>
+</div>
+</div>
+<div class="py-5 section-slider position-relative" id="campusClicksSection">
+<div class="section-slides">
+<div class="section-slide active" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=1600&h=900&fit=crop');"></div>
+<div class="section-slide" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&h=900&fit=crop');"></div>
+<div class="section-slide" style="background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&h=900&fit=crop');"></div>
+</div>
+<div class="section-slider-overlay"></div>
+<div class="container position-relative" style="z-index: 2;" data-aos="fade-up">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2 text-white">Campus Clicks</h2>
+<p class="text-white-50">Your Campus, Your Click — moments captured by MTIET students</p>
+</div>
+<div class="row g-3" id="campusClicksGrid">
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="0">
+<div class="campus-click-card" onclick="openCampusLightbox(0)">
+<div class="cclick-img-wrap"><img src="https://mtieat.org/uploads/insta_clicks/09_02_2024_111357.jpeg" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="100">
+<div class="campus-click-card" onclick="openCampusLightbox(1)">
+<div class="cclick-img-wrap"><img src="https://mtieat.org/uploads/insta_clicks/12_02_2024_034745.jpeg" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="200">
+<div class="campus-click-card" onclick="openCampusLightbox(2)">
+<div class="cclick-img-wrap"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=500&h=350&fit=crop" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="300">
+<div class="campus-click-card" onclick="openCampusLightbox(3)">
+<div class="cclick-img-wrap"><img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=500&h=350&fit=crop" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="400">
+<div class="campus-click-card" onclick="openCampusLightbox(4)">
+<div class="cclick-img-wrap"><img src="https://images.unsplash.com/photo-1562774053-701939374585?w=500&h=350&fit=crop" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+<div class="col-md-4 col-6" data-aos="zoom-in" data-aos-delay="500">
+<div class="campus-click-card" onclick="openCampusLightbox(5)">
+<div class="cclick-img-wrap"><img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=500&h=350&fit=crop" alt="Campus Click" loading="lazy"></div>
+<div class="cclick-overlay"><span class="cclick-icon"><i class="bi bi-camera"></i></span></div>
+</div>
+</div>
+</div>
+<div class="text-center mt-4" data-aos="fade-up">
+<button class="btn btn-outline-light rounded-pill px-4" onclick="openCampusLightbox(0)">View All <i class="bi bi-arrow-right ms-1"></i></button>
+</div>
+</div>
+</div>
+<div id="campusLightbox" class="campus-lightbox" onclick="closeCampusLightbox(event)">
+<span class="campus-lightbox-close" onclick="closeCampusLightbox()">&times;</span>
+<button class="campus-lightbox-nav campus-lightbox-prev" onclick="changeCampusSlide(-1)">&#10094;</button>
+<button class="campus-lightbox-nav campus-lightbox-next" onclick="changeCampusSlide(1)">&#10095;</button>
+<img class="campus-lightbox-img" id="campusLightboxImg" alt="Campus Click">
+</div>
+<script>
+var campusImages = [
+  "https://mtieat.org/uploads/insta_clicks/09_02_2024_111357.jpeg",
+  "https://mtieat.org/uploads/insta_clicks/12_02_2024_034745.jpeg",
+  "https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&h=600&fit=crop"
+];
+var currentSlide = 0;
+function openCampusLightbox(idx) {
+  currentSlide = idx;
+  var img = document.getElementById('campusLightboxImg');
+  img.src = campusImages[currentSlide];
+  document.getElementById('campusLightbox').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeCampusLightbox(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('campusLightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function changeCampusSlide(n) {
+  currentSlide = (currentSlide + n + campusImages.length) % campusImages.length;
+  document.getElementById('campusLightboxImg').src = campusImages[currentSlide];
+}
+document.addEventListener('keydown', function(e) {
+  var lb = document.getElementById('campusLightbox');
+  if (lb.style.display !== 'flex') return;
+  if (e.key === 'Escape') closeCampusLightbox();
+  if (e.key === 'ArrowLeft') changeCampusSlide(-1);
+  if (e.key === 'ArrowRight') changeCampusSlide(1);
+});
+</script>
+<div class="py-5 section-slider position-relative" id="alumniSection">
+<div class="section-slides">
+<div class="section-slide active" style="background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&h=900&fit=crop');"></div>
+<div class="section-slide" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&h=900&fit=crop');"></div>
+<div class="section-slide" style="background-image: url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1600&h=900&fit=crop');"></div>
+</div>
+<div class="section-slider-overlay" style="background: rgba(248,250,252,0.92);"></div>
+<div class="container position-relative" style="z-index: 2;" data-aos="fade-up">
+<div class="text-center mb-5">
+<h2 class="fw-bold mb-2">MTIEAT Alumni</h2>
+<p class="text-muted">We are proud of you.</p>
+</div>
+<div id="alumniCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel-inner">
+<div class="carousel-item active">
+<div class="row justify-content-center g-4">
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni1.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">M. Silpa</h6>
+<small class="text-muted">Web Developer</small>
+<p class="small text-muted mt-2 px-3">Several students got selected and placed in good companies. The job opportunities cater to the growth of an individual.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni2.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">R. Prathima</h6>
+<small class="text-muted">Software Designer</small>
+<p class="small text-muted mt-2 px-3">The teachers are highly supportive and friendly. Each student is assigned to a mentor ensuring one-on-one attention.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni3.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">P. Preethi</h6>
+<small class="text-muted">Business Analyst</small>
+<p class="small text-muted mt-2 px-3">Overall MTIEAT is a well established college. You get to learn many things other than the main stream.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center g-4">
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni4.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">T. Rohith Kumar</h6>
+<small class="text-muted">Web Designer</small>
+<p class="small text-muted mt-2 px-3">The college has all necessary infrastructure. Digital classrooms provide a better learning experience.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni5.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">S. Sowmya</h6>
+<small class="text-muted">Web Designer</small>
+<p class="small text-muted mt-2 px-3">The teaching is very good. Teachers make sure concepts are well explained and give proper guidance.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni6.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">C. Bhavani</h6>
+<small class="text-muted">Web Designer</small>
+<p class="small text-muted mt-2 px-3">The placement cell is best. Many reputed organizations like Cognizant participate with decent package offers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center g-4">
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni7.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">Ajay</h6>
+<small class="text-muted">Programmer Analyst, Cognizant · 4.67 LPA</small>
+<p class="small text-muted mt-2 px-3">The college atmosphere is very pleasant. Many events are conducted related to sports, cultural, technical.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni8.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">S. Bhavana</h6>
+<small class="text-muted">Associate Engineer, Altimetrik · 7 LPA</small>
+<p class="small text-muted mt-2 px-3">MTIET is the only college where you find homely environment, best faculty, great learning experience.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni9.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">V. S. Chaithanya</h6>
+<small class="text-muted">Associate Engineer, Altimetrik · 7 LPA</small>
+<p class="small text-muted mt-2 px-3">MTIET provided me a wonderful environment to grow academically and secure a place in the corporate world.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center g-4">
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni10.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">Aneesa Taj Shaik</h6>
+<small class="text-muted">Associate Engineer, Altimetrik · 7 LPA</small>
+<p class="small text-muted mt-2 px-3">Expansive and Grateful — learning from peers and professors, stretching our mind in every direction.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni11.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">Sai Vaishnavi</h6>
+<small class="text-muted">System Engineer, TCS · 7 LPA</small>
+<p class="small text-muted mt-2 px-3">Every college has a different campus tradition. Every moment in college is a memory creation.</p>
+</div>
+</div>
+<div class="col-md-4 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/alumni12.jpg" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">G. Brundha</h6>
+<small class="text-muted">Software Engineer, Capgemini · 6 LPA</small>
+<p class="small text-muted mt-2 px-3">Got placed in SecureW2, Mind Tree, Mphasis and Capgemini. Thankful to MTIET for laying better paths.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-item">
+<div class="row justify-content-center g-4">
+<div class="col-md-4 offset-md-2 col-6">
+<div class="alumni-card">
+<div class="alumni-avatar-wrap mx-auto"><img src="https://mtieat.org/assets/img/tkymts/user.png" alt="Alumni" class="alumni-avatar"></div>
+<h6 class="fw-bold mt-3 mb-0">G. Soumya Sree</h6>
+<small class="text-muted">Software Engineer, Atos Syntel · 6 LPA</small>
+<p class="small text-muted mt-2 px-3">Very thankful to all faculty members. Placed in Sopra Steria, DXC Technology and Atos Syntel.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<button class="carousel-control-prev" type="button" data-bs-target="#alumniCarousel" data-bs-slide="prev" style="width: 40px;"><span class="carousel-control-prev-icon bg-primary rounded-circle" style="padding: 12px;"></span></button>
+<button class="carousel-control-next" type="button" data-bs-target="#alumniCarousel" data-bs-slide="next" style="width: 40px;"><span class="carousel-control-next-icon bg-primary rounded-circle" style="padding: 12px;"></span></button>
+</div>
+</div>
+</div>
+<div class="py-5" style="background: #ffffff;">
+<div class="container">
+<div class="card border-0 shadow-sm overflow-hidden">
+<div class="row g-0">
+<div class="col-lg-5 p-4 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0);">
+<h4 class="fw-bold mb-1">Mother Theresa Institute of Engineering & Technology</h4>
+<p class="text-muted small mb-0">Melumoi Post, Palamaner, Chittoor, Andhra Pradesh</p>
+<hr>
+<div class="d-flex gap-3 small text-muted flex-wrap">
+<span><i class="bi bi-building me-1"></i>Est. 2010</span>
+<span><i class="bi bi-award me-1"></i>NBA Accredited</span>
+<span><i class="bi bi-geo-alt me-1"></i>NH-219, Palamaner</span>
+</div>
+<p class="small text-muted mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Part of Holy Cross Educational Society — NAAC A+ | UGC-Autonomous | ISO 9001:2015</p>
+</div>
+<div class="col-lg-7">
+<div class="ratio ratio-21x9 h-100">
+<iframe src="https://maps.google.com/maps?q=Mother+Theresa+Institute+of+Engineering+and+Technology+Palamaner&t=&z=15&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="border:0;"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="py-4" style="background: #0f172a;">
+<div class="container">
+<div class="row align-items-center g-3">
+<div class="col-md-6">
+<div class="d-flex align-items-center gap-3">
+<img src="https://mtieat.org/assets/img/tkymts/logo3.png" alt="MTIET Logo" style="height: 50px; filter: brightness(0) invert(1);">
+<div><h6 class="text-white fw-bold mb-0">Mother Theresa Institute of<br>Engineering & Technology</h6><small class="text-white-50">Est. 2010 · Palamaner, AP</small></div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="d-flex justify-content-md-end gap-4 flex-wrap">
+<a href="{% url 'students:about' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-info-circle me-1"></i>About</a>
+<a href="{% url 'students:placements' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-briefcase me-1"></i>Placements</a>
+<a href="{% url 'students:gallery' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-images me-1"></i>Gallery</a>
+<a href="{% url 'students:contact' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-telephone me-1"></i>Contact</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<button class="back-to-top" id="backToTop" title="Back to top"><i class="bi bi-chevron-up"></i></button>
+<button class="theme-toggle" id="themeToggle" title="Toggle theme"><i class="bi bi-moon-fill"></i></button>
+<a href="https://api.whatsapp.com/send?phone=919866888648&text=Hi%20MTIET" class="whatsapp-float" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+function animateCounters(){document.querySelectorAll('.counter').forEach(function(el){var target=parseInt(el.dataset.target);if(isNaN(target)||target===0){el.textContent=target;return;}var current=0;var increment=Math.ceil(target/40);var timer=setInterval(function(){current+=increment;if(current>=target){current=target;clearInterval(timer);}el.textContent=current;},30);});}
+animateCounters();
+var typingEl=document.getElementById('heroTyping');if(typingEl){var phrases=['{{ count }} student{{ count|pluralize:"s" }} across {{ dept_count }} department{{ dept_count|pluralize:"s" }}','🔥 {{ grade_a }} students scored A grade','📊 Avg attendance {{ avg_attendance|default:0|floatformat:1 }}%','🏆 Top scorer: {{ toppers.0.name|default:"—" }}'];var pi=0,ci=0,isDeleting=false;function typeLoop(){var current=phrases[pi];if(isDeleting){typingEl.textContent=current.substring(0,ci--);if(ci<0){isDeleting=false;pi=(pi+1)%phrases.length;setTimeout(typeLoop,800);return;}setTimeout(typeLoop,30);}else{typingEl.textContent=current.substring(0,ci++);if(ci>current.length){isDeleting=true;setTimeout(typeLoop,2000);return;}setTimeout(typeLoop,50);}}
+typeLoop();}
+var themeToggle=document.getElementById('themeToggle');var themeIcon=themeToggle.querySelector('i');var currentTheme=localStorage.getItem('theme')||'light';if(currentTheme==='dark'){document.documentElement.setAttribute('data-theme','dark');themeIcon.className='bi bi-sun-fill';}
+themeToggle.addEventListener('click',function(){var html=document.documentElement;var isDark=html.getAttribute('data-theme')==='dark';if(isDark){html.removeAttribute('data-theme');localStorage.setItem('theme','light');themeIcon.className='bi bi-moon-fill';}else{html.setAttribute('data-theme','dark');localStorage.setItem('theme','dark');themeIcon.className='bi bi-sun-fill';}});
+var backBtn=document.getElementById('backToTop');window.addEventListener('scroll',function(){backBtn.classList.toggle('visible',window.scrollY>400);});backBtn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+var clock=document.getElementById('liveClock');if(clock){function updateClock(){clock.textContent=new Date().toLocaleString('en-IN',{weekday:'short',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});}updateClock();setInterval(updateClock,1000);}
+var greetingEl=document.getElementById('greetingTag');if(greetingEl){var hr=new Date().getHours();var greet='Good Evening',icon='moon-stars';if(hr<12){greet='Good Morning';icon='sun';}else if(hr<17){greet='Good Afternoon';icon='brightness-high';}greetingEl.innerHTML='<i class="bi bi-'+icon+' me-1"></i>'+greet;}
+var progBar=document.getElementById('readingProgress');if(progBar){window.addEventListener('scroll',function(){var scrollTop=window.scrollY;var docHeight=document.documentElement.scrollHeight-window.innerHeight;progBar.style.width=(scrollTop/docHeight*100)+'%';});}
+function animateProgressBars(){document.querySelectorAll('.progress-bar, .fee-bar').forEach(function(bar){if(bar.classList.contains('animated'))return;var rect=bar.getBoundingClientRect();if(rect.top<window.innerHeight&&rect.bottom>0){var w=bar.getAttribute('data-width')||bar.style.width;if(!bar.getAttribute('data-width')){bar.setAttribute('data-width',w);}bar.style.width='0%';bar.classList.remove('animated');setTimeout(function(){bar.style.width=w;bar.classList.add('animated');},100);}});}
+window.addEventListener('scroll',animateProgressBars);setTimeout(animateProgressBars,500);
+});
+</script>
+{% endblock %}

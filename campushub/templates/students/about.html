@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}About | CampusHub{% endblock %}
+
+{% block content %}
+<h1>About CampusHub</h1>
+<div class="row mt-4">
+    <div class="col-md-8">
+        <p class="lead">CampusHub is a college portal built with Django — demonstrating the MVT architecture, ORM, authentication, and more.</p>
+        <h3>Technologies Used</h3>
+        <ul>
+            <li><strong>Django {{ django_version }}</strong> — Python web framework</li>
+            <li><strong>Bootstrap 5</strong> — Frontend UI</li>
+            <li><strong>SQLite</strong> — Database (development)</li>
+        </ul>
+        <h3>Topics Covered</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item">4.1 — Django Intro & Setup</li>
+                    <li class="list-group-item">4.2 — URL Routing & Views</li>
+                    <li class="list-group-item">4.3 — Django Templates</li>
+                    <li class="list-group-item">4.4 — Models & ORM</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item">4.5 — Forms & Validation</li>
+                    <li class="list-group-item">4.6 — Admin Panel</li>
+                    <li class="list-group-item">4.7 — Authentication</li>
+                    <li class="list-group-item">4.9 — File Upload</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Delete Student | CampusHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body text-center py-5">
+                <h2 class="text-danger mb-3">Delete Student</h2>
+                <p class="lead">Are you sure you want to delete <strong>{{ object.name }}</strong> (Roll: {{ object.roll }})?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    <a href="{% url 'students:detail' roll=object.roll %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

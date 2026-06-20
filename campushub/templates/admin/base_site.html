@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img src="{% static 'images/logo.svg' %}" alt="CampusHub" width="32" height="32"
+             style="vertical-align:middle;margin-right:8px;background:rgba(255,255,255,0.2);border-radius:6px;padding:4px;">
+        {{ site_header|default:_('Django administration') }}
+    </a>
+</div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}
+{% if user.is_authenticated %}
+<div id="user-email" style="float:right;margin:10px 20px 0 0;color:var(--primary-fg);font-size:13px;">
+    <strong>{{ user.get_username }}</strong> &lt;{{ user.email }}&gt;
+</div>
+{% endif %}
+{% endblock %}
